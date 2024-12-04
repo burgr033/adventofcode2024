@@ -7,6 +7,39 @@ import (
 	"strings"
 )
 
+func PrintMatrix(matrix [DIMENSION][DIMENSION]string) {
+	for _, row := range matrix {
+		fmt.Println(row)
+	}
+}
+
+func checkMatrixForMAS(matrix [DIMENSION][DIMENSION]string) int {
+	var counter int
+	for i := 1; i < DIMENSION-1; i++ { // Iterate rows, skipping the first and last
+		for j := 1; j < DIMENSION-1; j++ { // Iterate columns, skipping the first and last
+			if matrix[i][j] == "A" {
+				// Check both diagonals for X-MAS pattern
+				if ((matrix[i-1][j-1] == "M" && matrix[i+1][j+1] == "S") || (matrix[i-1][j-1] == "S" && matrix[i+1][j+1] == "M")) &&
+					((matrix[i-1][j+1] == "M" && matrix[i+1][j-1] == "S") || (matrix[i-1][j+1] == "S" && matrix[i+1][j-1] == "M")) {
+					counter++
+				}
+			}
+		}
+	}
+	fmt.Println(counter)
+	return counter
+}
+
+func buildMatrix(horStrings []string) [DIMENSION][DIMENSION]string {
+	var matrix [DIMENSION][DIMENSION]string
+	for i, v := range horStrings {
+		for j, r := range v {
+			matrix[i][j] = string(r)
+		}
+	}
+	return matrix
+}
+
 func getDiagonalStrings(horStrings []string) []string {
 	var diagonals []string
 	rows := len(horStrings)
@@ -63,9 +96,14 @@ func getVerStrings(horStrings []string) []string {
 	return verStrings
 }
 
+// this is very ugly with the constant and the 2D array...
+const (
+	DIMENSION = 140
+	keyword   = "XMAS"
+)
+
 func main() {
-	keyword := "XMAS"
-	file, err := os.Open("test_input.txt")
+	file, err := os.Open("input.txt")
 	if err != nil {
 		panic(err)
 	}
@@ -85,5 +123,9 @@ func main() {
 	for _, v := range diagStrings {
 		counter += checkString(v, keyword)
 	}
-	fmt.Println(counter)
+	fmt.Printf("PartOne:%v\n", counter)
+	matrix := buildMatrix(horStrings)
+	PrintMatrix(matrix)
+	fmt.Println("------")
+	_ = checkMatrixForMAS(matrix)
 }
